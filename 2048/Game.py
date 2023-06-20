@@ -29,6 +29,9 @@ class Game:
         self.drawScore()
         self.gameLoop()
 
+    def generateEmptyBoard(self):
+        return [[None]*4 for i in range(4)]
+
     def updateScore(self, points):
         self.score += points
 
@@ -137,27 +140,79 @@ class Game:
             numCell.setStyle("bold")
             numCell.setFill(C.NUM_COLOR_DICT[num])
             numCell.setSize(22)
-            numCell.draw(self.win)
+            numCell.draw(self.win)  
           
     def moveUp(self):
-        for row in range(0, 4):
+        emptyBoard = self.generateEmptyBoard()
+        for column in range(0, 4):
+            count = 0
+            for row in range(0, 4):
+                if self.board[row][column] != None:
+                    emptyBoard[count][column] = self.board[row][column]
+                    count += 1
+        
+        self.board = emptyBoard
+
+        for row in range(1, 4):
             for column in range(0, 4):
-                pass
+                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
+                    self.board[row - 1][column] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column] = None
 
     def moveLeft(self):
+        emptyBoard = self.generateEmptyBoard()
         for row in range(0, 4):
+            count = 0
             for column in range(0, 4):
-                pass
+                if self.board[row][column] != None:
+                    emptyBoard[row][count] = self.board[row][column]
+                    count += 1
+        
+        self.board = emptyBoard
+
+        for row in range(0, 4):
+            for column in range(1, 4):
+                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
+                    self.board[row][column - 1] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column] = None
 
     def moveDown(self):
-        for row in range(0, 4):
-            for column in range(0, 4):
-                pass
+        emptyBoard = self.generateEmptyBoard()
+        for column in range(0, 4):
+            count = 3
+            for row in range(3, -1, -1):
+                if self.board[row][column] != None:
+                    emptyBoard[count][column] = self.board[row][column]
+                    count -= 1
 
-    def moveRight(self):
-        for row in range(0, 4):
+        self.board = emptyBoard
+
+        for row in range(0, 3):
             for column in range(0, 4):
-                pass
+                if self.board[row][column] == self.board[row + 1][column] and self.board[row][column] != None:
+                    self.board[row + 1][column] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column] = None
+        
+    def moveRight(self):
+        emptyBoard = self.generateEmptyBoard()
+        for row in range(0, 4):
+            count = 3
+            for column in range(3, -1, -1):
+                if self.board[row][column] != None:
+                    emptyBoard[row][count] = self.board[row][column]
+                    count -= 1
+
+        self.board = emptyBoard
+
+        for row in range(0, 4):
+            for column in range(0, 3):
+                if self.board[row][column] == self.board[row][column + 1] and self.board[row][column] != None :
+                    self.board[row][column + 1] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column] = None
     
     def gameLoop(self):
         done = False
