@@ -25,3 +25,22 @@ CELL_COLOR_DICT = {
     65536:  "#000000",
 }
 
+NUM_COLOR_DICT = {
+    2:      "#64523F",
+    4:      "#64523F",
+    8:      "#FFFFFF",
+    16:     "#FFFFFF",
+    32:     "#FFFFFF",
+    64:     "#FFFFFF",
+    128:    "#FFFFFF",
+    256:    "#FFFFFF",
+    512:    "#FFFFFF",
+    1024:   "#FFFFFF",
+    2048:   "#FFFFFF",
+    4096:   "#FFFFFF",
+    8192:   "#FFFFFF",
+    16384:  "#FFFFFF",
+    32768:  "#FFFFFF",
+    65536:  "#FFFFFF",
+}
+
