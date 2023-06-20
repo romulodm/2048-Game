@@ -189,12 +189,12 @@ class Game:
 
         self.board = emptyBoard
 
-        for row in range(0, 3):
+        for row in range(3, 0, -1):
             for column in range(0, 4):
-                if self.board[row][column] == self.board[row + 1][column] and self.board[row][column] != None:
-                    self.board[row + 1][column] = self.board[row][column] * 2
+                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
+                    self.board[row][column] = self.board[row][column] * 2
                     self.updateScore(self.board[row][column] * 2)
-                    self.board[row][column] = None
+                    self.board[row - 1][column] = None
         
     def moveRight(self):
         emptyBoard = self.generateEmptyBoard()
@@ -208,11 +208,12 @@ class Game:
         self.board = emptyBoard
 
         for row in range(0, 4):
-            for column in range(0, 3):
-                if self.board[row][column] == self.board[row][column + 1] and self.board[row][column] != None :
-                    self.board[row][column + 1] = self.board[row][column] * 2
+            for column in range(3, 0, -1):
+                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
+                    self.board[row][column] = self.board[row][column] * 2
                     self.updateScore(self.board[row][column] * 2)
-                    self.board[row][column] = None
+                    self.board[row][column - 1] = None
+        
     
     def gameLoop(self):
         done = False

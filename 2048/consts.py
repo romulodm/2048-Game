@@ -8,7 +8,7 @@ CELL_BORDER_COLOR = "#A29580"
 
 CELL_COLOR_DICT = {
     2:      "#EDE2CD",
-    4:      "#FFE9C5",
+    4:      "#EFDEC2",
     8:      "#F59563",
     16:     "#FF8520",
     32:     "#F67C5F",
