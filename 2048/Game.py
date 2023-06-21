@@ -1,4 +1,5 @@
 import random
+import time
 from graphics import *
 from visual import game_over_screen
 import consts as C
@@ -22,7 +23,7 @@ class Game:
         
         self.win = win
 
-        self.done = False
+        self.lastMove = None
 
         self.cells = []
         self.nums = []
@@ -38,6 +39,10 @@ class Game:
 
     def generateEmptyBoard(self):
         return [[None]*4 for i in range(4)]
+    
+    def resetLastMove(self):
+        self.lastMove = None
+        return True
 
     def updateScore(self, points):
         self.score += points
@@ -106,6 +111,14 @@ class Game:
                     
         return False
     
+    def checkCellQuantity(self):
+        n = 0
+        for row in range(0, 4):
+            for column in range(0, 4):
+                if self.board[row][column] != None:
+                    n += 1
+        return n
+    
     def checkEmptyCells(self):
         for row in range(0, 4):
             for column in range(0, 4):
@@ -158,7 +171,7 @@ class Game:
         for row in range(0, 4):
             for column in range(0, 4):
                  self.nums[row][column].draw(self.win)
-
+                 
     def drawPieces(self):
         if self.checkBoard:
             for row in range(0, 4):
@@ -167,7 +180,7 @@ class Game:
                     self.drawPiece(row,column,num)
             return True
         return False
-          
+      
     def drawPiece(self,row,column,num):
         X = 7 + (column * 105)
         Y = 152 + (row * 105)
@@ -194,7 +207,13 @@ class Game:
             numCell.setSize(22)
             numCell.draw(self.win)  
           
-    def moveUp(self):
+    def moveUp(self, move):
+        if self.lastMove == "Up" or self.lastMove == "W" or self.lastMove == "w":
+            quantity = self.checkCellQuantity()
+            if quantity == 1:
+                self.resetLastMove()
+                return False
+            
         self.compressUp()
         #Merge cells:
         for row in range(1, 4):
@@ -207,6 +226,9 @@ class Game:
         self.compressUp()
         self.generateRandomPiece()
 
+        self.lastMove = move
+        return True
+
     def compressUp(self):
         emptyBoard = self.generateEmptyBoard()
         for column in range(0, 4):
@@ -217,8 +239,15 @@ class Game:
                     count += 1
         
         self.board = emptyBoard
+        return True
 
-    def moveLeft(self):
+    def moveLeft(self, move):
+        if self.lastMove == "Left" or self.lastMove == "A" or self.lastMove == "a":
+            quantity = self.checkCellQuantity()
+            if quantity == 1:
+                self.resetLastMove()
+                return False
+            
         self.compressLeft()
         #Merge cells:
         for row in range(0, 4):
@@ -231,6 +260,9 @@ class Game:
         self.compressLeft()
         self.generateRandomPiece()
 
+        self.lastMove = move
+        return True
+
     def compressLeft(self):
         emptyBoard = self.generateEmptyBoard()
         for row in range(0, 4):
@@ -241,8 +273,15 @@ class Game:
                     count += 1
         
         self.board = emptyBoard
+        return True
 
-    def moveDown(self):
+    def moveDown(self, move):
+        if self.lastMove == "Down" or self.lastMove == "S" or self.lastMove == "s":
+            quantity = self.checkCellQuantity()
+            if quantity == 1:
+                self.resetLastMove()
+                return False
+
         self.compressDown()
         #Merge cells:
         for row in range(3, 0, -1):
@@ -255,6 +294,9 @@ class Game:
         self.compressDown()
         self.generateRandomPiece()
 
+        self.lastMove = move
+        return True
+
     def compressDown(self):
         emptyBoard = self.generateEmptyBoard()
         for column in range(0, 4):
@@ -265,8 +307,15 @@ class Game:
                     count -= 1
 
         self.board = emptyBoard
+        return True
         
-    def moveRight(self):
+    def moveRight(self, move):
+        if self.lastMove == "Right" or self.lastMove == "D" or self.lastMove == "d":
+            quantity = self.checkCellQuantity()
+            if quantity == 1:
+                self.resetLastMove()
+                return False
+            
         self.compressRight()
         #Merge cells:
         for row in range(0, 4):
@@ -276,8 +325,11 @@ class Game:
                     self.updateScore(self.board[row][column] * 2)
                     self.board[row][column - 1] = None    
         
-        self.compressRight() 
+        self.compressRight()
         self.generateRandomPiece()
+
+        self.lastMove = move
+        return True
 
     def compressRight(self): 
         emptyBoard = self.generateEmptyBoard()
@@ -289,6 +341,7 @@ class Game:
                     count -= 1
 
         self.board = emptyBoard
+        return True
 
     def resetGame(self):
         for row in range(0, 4):
@@ -299,61 +352,61 @@ class Game:
             for column in range(0, 4):
                 self.nums[row][column].undraw()
 
-        self.resetScore()
         self.saveScore()
+        self.resetScore()
         self.updateScore(0)
         self.board = self.generateEmptyBoard()
-        self.generateRandomPiece()
         self.drawPieces()
 
-        return True
+        return self.gameLoop()
 
-    def gameOver(self, showMessage):
-        if showMessage:
-            for item in self.gameOverScreen:
-                item.draw(self.win)
+    def gameOver(self):
+        for item in self.gameOverScreen:
+            item.draw(self.win)
 
-            done = False
-            while not done:
-                click = self.win.checkMouse()
-                if click:
-                    if click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
-                        for item in self.gameOverScreen:
-                            item.undraw()
-                        done = True
-                        self.resetGame()
-            return True 
-        
-        else:
-            self.resetGame()
-            return True 
+        done = False
+        while not done:
+            click = self.win.checkMouse()
+            if click:
+                if click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
+                    for item in self.gameOverScreen:
+                        item.undraw()
+                    done = True
+        return True 
 
     def gameLoop(self):
         self.generateRandomPiece()
+        
+        self.done = False
         while not self.done:
+            if not self.checkBoard():
+                if self.gameOver():
+                    self.done = True
+                    return self.resetGame()
+                
             click = self.win.checkMouse()
             if click and click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
-                self.gameOver(False)
-
-            if not self.checkBoard():
-                self.gameOver(True)
+                self.done = True
+                return self.resetGame()
 
             moveKey = self.win.checkKey()
+            if moveKey:
+                if moveKey == "Up" or moveKey == "W" or moveKey == "w":
+                    self.moveUp(moveKey)
+                    moveKey = None
+                    time.sleep(0.1)
 
-            if moveKey == "Up" or moveKey == "W" or moveKey == "w":
-                self.moveUp()
-                moveKey = None
+                if moveKey == "Left" or moveKey == "A" or moveKey == "a":
+                    self.moveLeft(moveKey)
+                    moveKey = None
+                    time.sleep(0.1)
 
-            if moveKey == "Left" or moveKey == "A" or moveKey == "a":
-                self.moveLeft()
-                moveKey = None
-                
-            if moveKey == "Down" or moveKey == "S" or moveKey == "s":
-                self.moveDown()
-                moveKey = None
+                if moveKey == "Down" or moveKey == "S" or moveKey == "s":
+                    self.moveDown(moveKey)   
+                    moveKey = None
+                    time.sleep(0.1)
 
-            if moveKey == "Right" or moveKey == "D" or moveKey == "d":
-                self.moveRight()
-                moveKey = None
-
-    
+                if moveKey == "Right" or moveKey == "D" or moveKey == "d":
+                    self.moveRight(moveKey)
+                    moveKey = None
+                    time.sleep(0.1)
