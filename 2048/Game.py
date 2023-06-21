@@ -143,6 +143,18 @@ class Game:
             numCell.draw(self.win)  
           
     def moveUp(self):
+        self.compressUp()
+        #Merge cells:
+        for row in range(1, 4):
+            for column in range(0, 4):
+                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
+                    self.board[row - 1][column] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column] = None
+
+        self.compressUp()
+
+    def compressUp(self):
         emptyBoard = self.generateEmptyBoard()
         for column in range(0, 4):
             count = 0
@@ -153,14 +165,19 @@ class Game:
         
         self.board = emptyBoard
 
-        for row in range(1, 4):
-            for column in range(0, 4):
-                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
-                    self.board[row - 1][column] = self.board[row][column] * 2
+    def moveLeft(self):
+        self.compressLeft()
+        #Merge cells:
+        for row in range(0, 4):
+            for column in range(1, 4):
+                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
+                    self.board[row][column - 1] = self.board[row][column] * 2
                     self.updateScore(self.board[row][column] * 2)
                     self.board[row][column] = None
 
-    def moveLeft(self):
+        self.compressLeft()
+
+    def compressLeft(self):
         emptyBoard = self.generateEmptyBoard()
         for row in range(0, 4):
             count = 0
@@ -171,14 +188,18 @@ class Game:
         
         self.board = emptyBoard
 
-        for row in range(0, 4):
-            for column in range(1, 4):
-                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
-                    self.board[row][column - 1] = self.board[row][column] * 2
-                    self.updateScore(self.board[row][column] * 2)
-                    self.board[row][column] = None
-
     def moveDown(self):
+        self.compressDown()
+        #Merge cells:
+        for row in range(3, 0, -1):
+            for column in range(0, 4):
+                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
+                    self.board[row][column] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row - 1][column] = None
+        self.compressDown()
+
+    def compressDown(self):
         emptyBoard = self.generateEmptyBoard()
         for column in range(0, 4):
             count = 3
@@ -188,15 +209,20 @@ class Game:
                     count -= 1
 
         self.board = emptyBoard
-
-        for row in range(3, 0, -1):
-            for column in range(0, 4):
-                if self.board[row][column] == self.board[row - 1][column] and self.board[row][column] != None:
-                    self.board[row][column] = self.board[row][column] * 2
-                    self.updateScore(self.board[row][column] * 2)
-                    self.board[row - 1][column] = None
         
     def moveRight(self):
+        self.compressRight()
+        #Merge cells:
+        for row in range(0, 4):
+            for column in range(3, 0, -1):
+                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
+                    self.board[row][column] = self.board[row][column] * 2
+                    self.updateScore(self.board[row][column] * 2)
+                    self.board[row][column - 1] = None    
+
+        self.compressRight() 
+
+    def compressRight(self): 
         emptyBoard = self.generateEmptyBoard()
         for row in range(0, 4):
             count = 3
@@ -207,14 +233,6 @@ class Game:
 
         self.board = emptyBoard
 
-        for row in range(0, 4):
-            for column in range(3, 0, -1):
-                if self.board[row][column] == self.board[row][column - 1] and self.board[row][column] != None:
-                    self.board[row][column] = self.board[row][column] * 2
-                    self.updateScore(self.board[row][column] * 2)
-                    self.board[row][column - 1] = None
-        
-    
     def gameLoop(self):
         done = False
         while not done:
@@ -234,7 +252,5 @@ class Game:
             if moveKey == "Right" or moveKey == "D" or moveKey == "d":
                 self.moveRight()
 
-
-
-
+            self.checkBoard()
     
