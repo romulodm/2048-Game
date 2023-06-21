@@ -29,6 +29,7 @@ class Game:
         self.generateNums()
         self.getHighestScore()
         self.drawScore()
+
         self.gameLoop()
 
     def generateEmptyBoard(self):
@@ -39,15 +40,19 @@ class Game:
         if self.score > self.highestScore:
             self.highestScore = self.score
             self.updateHighestScore()
+            self.saveScore()
         self.currentScore.undraw()
         self.drawScore()
 
     def drawScore(self):
-        self.currentScore = Text(Point(265, 45), self.score)
+        self.currentScore = Text(Point(320, 105), self.score)
         self.currentScore.setStyle("bold")
         self.currentScore.setFill(C.GAME_MAIN_COLOR)
         self.currentScore.setSize(17)
         self.currentScore.draw(self.win)
+
+    def resetScore(self):
+        self.score = 0
 
     def getHighestScore(self):
         file = open("2048/highest.txt", "r")
@@ -61,17 +66,15 @@ class Game:
         self.drawHighestScore()
 
     def saveScore(self):
-        if self.score > int(self.highestScore):
+        if self.score >= int(self.highestScore):
             file = open("2048/highest.txt", "w")
             file.write(str(self.score))
             file.close()
-            self.score = 0
             return True
-        self.score = 0
         return False
     
     def drawHighestScore(self):
-        self.recordScore = Text(Point(265, 105), self.highestScore)
+        self.recordScore = Text(Point(320, 45), self.highestScore)
         self.recordScore.setStyle("bold")
         self.recordScore.setFill(C.GAME_MAIN_COLOR)
         self.recordScore.setSize(17)
@@ -79,7 +82,7 @@ class Game:
 
     def updateHighestScore(self):
         self.recordScore.undraw()
-        self.recordScore = Text(Point(265, 105), self.highestScore)
+        self.recordScore = Text(Point(320, 45), self.highestScore)
         self.recordScore.setStyle("bold")
         self.recordScore.setFill(C.GAME_MAIN_COLOR)
         self.recordScore.setSize(17)
@@ -198,6 +201,7 @@ class Game:
                     self.board[row][column] = None
 
         self.compressUp()
+        self.generateRandomPiece()
 
     def compressUp(self):
         emptyBoard = self.generateEmptyBoard()
@@ -221,6 +225,7 @@ class Game:
                     self.board[row][column] = None
 
         self.compressLeft()
+        self.generateRandomPiece()
 
     def compressLeft(self):
         emptyBoard = self.generateEmptyBoard()
@@ -242,7 +247,9 @@ class Game:
                     self.board[row][column] = self.board[row][column] * 2
                     self.updateScore(self.board[row][column] * 2)
                     self.board[row - 1][column] = None
+        
         self.compressDown()
+        self.generateRandomPiece()
 
     def compressDown(self):
         emptyBoard = self.generateEmptyBoard()
@@ -264,8 +271,9 @@ class Game:
                     self.board[row][column] = self.board[row][column] * 2
                     self.updateScore(self.board[row][column] * 2)
                     self.board[row][column - 1] = None    
-
+        
         self.compressRight() 
+        self.generateRandomPiece()
 
     def compressRight(self): 
         emptyBoard = self.generateEmptyBoard()
@@ -287,30 +295,42 @@ class Game:
             for column in range(0, 4):
                 self.nums[row][column].undraw()
 
-        self.saveScore()
+        self.restartGame()
 
-        self.done = True
-        return
+        return True 
+    
+    def restartGame(self):
+
+        self.saveScore()
+        self.updateScore(0)
+        self.board = self.generateEmptyBoard()
+        self.generateRandomPiece()
+        self.drawPieces()
+
+        return True 
 
     def gameLoop(self):
+        self.generateRandomPiece()
         while not self.done:
-            self.generateRandomPiece()
+            click = self.win.checkMouse()
+            if click and click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
+                self.gameOver()
 
             if not self.checkBoard():
                 self.gameOver()
 
-            if not self.done:
-                moveKey = self.win.getKey()
+            moveKey = self.win.checkKey()
 
-                if moveKey == "Up" or moveKey == "W" or moveKey == "w":
-                    self.moveUp()
+            if moveKey == "Up" or moveKey == "W" or moveKey == "w":
+                self.moveUp()
 
-                if moveKey == "Left" or moveKey == "A" or moveKey == "a":
-                    self.moveLeft()
-                    
-                if moveKey == "Down" or moveKey == "S" or moveKey == "s":
-                    self.moveDown()
+            if moveKey == "Left" or moveKey == "A" or moveKey == "a":
+                self.moveLeft()
+                
+            if moveKey == "Down" or moveKey == "S" or moveKey == "s":
+                self.moveDown()
 
-                if moveKey == "Right" or moveKey == "D" or moveKey == "d":
-                    self.moveRight()
+            if moveKey == "Right" or moveKey == "D" or moveKey == "d":
+                self.moveRight()
+
     
