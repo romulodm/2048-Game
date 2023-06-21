@@ -13,10 +13,10 @@ import consts as C
 class Game:
     def __init__(self, win):
         self.score = 0
-        self.board = [[2,64,2,None],
-                      [4,128,8,2],
-                      [8,32,16,4],
-                      [16,256,4,2]]
+        self.board = [[None,None,None,None],
+                      [None,None,None,None],
+                      [None,None,None,None],
+                      [None,None,None,None]]
         
         self.win = win
 
@@ -66,10 +66,8 @@ class Game:
             file.write(str(self.score))
             file.close()
             self.score = 0
-            print("aqui")
             return True
         self.score = 0
-        print("aquie")
         return False
     
     def drawHighestScore(self):
@@ -291,7 +289,6 @@ class Game:
 
         self.saveScore()
 
-        print("Oi")
         self.done = True
         return
 
@@ -301,7 +298,6 @@ class Game:
 
             if not self.checkBoard():
                 self.gameOver()
-                print("voltei")
 
             if not self.done:
                 moveKey = self.win.getKey()
