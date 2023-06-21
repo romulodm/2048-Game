@@ -1,6 +1,8 @@
 import random
 from graphics import *
+from visual import game_over_screen
 import consts as C
+
 
 ##############################################
 #                                            #
@@ -24,6 +26,8 @@ class Game:
 
         self.cells = []
         self.nums = []
+
+        self.gameOverScreen = game_over_screen()
 
         self.generateCells()
         self.generateNums()
@@ -286,7 +290,7 @@ class Game:
 
         self.board = emptyBoard
 
-    def gameOver(self):
+    def resetGame(self):
         for row in range(0, 4):
             for column in range(0, 4):
                 self.cells[row][column].undraw()
@@ -295,42 +299,61 @@ class Game:
             for column in range(0, 4):
                 self.nums[row][column].undraw()
 
-        self.restartGame()
-
-        return True 
-    
-    def restartGame(self):
-
+        self.resetScore()
         self.saveScore()
         self.updateScore(0)
         self.board = self.generateEmptyBoard()
         self.generateRandomPiece()
         self.drawPieces()
 
-        return True 
+        return True
+
+    def gameOver(self, showMessage):
+        if showMessage:
+            for item in self.gameOverScreen:
+                item.draw(self.win)
+
+            done = False
+            while not done:
+                click = self.win.checkMouse()
+                if click:
+                    if click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
+                        for item in self.gameOverScreen:
+                            item.undraw()
+                        done = True
+                        self.resetGame()
+            return True 
+        
+        else:
+            self.resetGame()
+            return True 
 
     def gameLoop(self):
         self.generateRandomPiece()
         while not self.done:
             click = self.win.checkMouse()
             if click and click.getX() >= 50 and click.getX() <= 170 and click.getY() >= 75 and click.getY() <= 115:
-                self.gameOver()
+                self.gameOver(False)
 
             if not self.checkBoard():
-                self.gameOver()
+                self.gameOver(True)
 
             moveKey = self.win.checkKey()
 
             if moveKey == "Up" or moveKey == "W" or moveKey == "w":
                 self.moveUp()
+                moveKey = None
 
             if moveKey == "Left" or moveKey == "A" or moveKey == "a":
                 self.moveLeft()
+                moveKey = None
                 
             if moveKey == "Down" or moveKey == "S" or moveKey == "s":
                 self.moveDown()
+                moveKey = None
 
             if moveKey == "Right" or moveKey == "D" or moveKey == "d":
                 self.moveRight()
+                moveKey = None
 
     

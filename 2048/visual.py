@@ -49,3 +49,21 @@ def staticVisual():
     GAME_VISUAL.append(scoreWord)
 
     return GAME_VISUAL
+
+def game_over_screen():
+    GAME_OVER = []
+
+    gameOverWindow = Rectangle(Point(100, 295), Point(325, 420))
+    gameOverWindow.setFill("white")
+    gameOverWindow.setWidth(3)
+    gameOverWindow.setOutline(C.GAME_MAIN_COLOR)
+    GAME_OVER.append(gameOverWindow)
+
+
+    gameOverMessage = Text(Point(212.5, 357.5), 'Game over, press the\n"NEW GAME" button\nto restart game!')
+    gameOverMessage.setStyle("bold")
+    gameOverMessage.setFill(C.GAME_MAIN_COLOR)
+    gameOverMessage.setSize(11)
+    GAME_OVER.append(gameOverMessage)
+
+    return GAME_OVER
