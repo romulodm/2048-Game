@@ -13,19 +13,21 @@ import consts as C
 class Game:
     def __init__(self, win):
         self.score = 0
-        self.board = [[None,None,None,None],
-                      [None,None,None,None],
-                      [None,None,None,None],
-                      [None,None,None,None]]
+        self.board = [[2,64,2,None],
+                      [4,128,8,2],
+                      [8,32,16,4],
+                      [16,256,4,2]]
         
         self.win = win
+
+        self.done = False
 
         self.cells = []
         self.nums = []
 
         self.generateCells()
         self.generateNums()
-
+        self.getHighestScore()
         self.drawScore()
         self.gameLoop()
 
@@ -34,16 +36,56 @@ class Game:
 
     def updateScore(self, points):
         self.score += points
-
+        if self.score > self.highestScore:
+            self.highestScore = self.score
+            self.updateHighestScore()
         self.currentScore.undraw()
         self.drawScore()
 
     def drawScore(self):
-        self.currentScore = Text(Point(265, 80), self.score)
+        self.currentScore = Text(Point(265, 45), self.score)
         self.currentScore.setStyle("bold")
         self.currentScore.setFill(C.GAME_MAIN_COLOR)
-        self.currentScore.setSize(20)
+        self.currentScore.setSize(17)
         self.currentScore.draw(self.win)
+
+    def getHighestScore(self):
+        file = open("2048/highest.txt", "r")
+        self.highestScore = file.read()
+        if len(self.highestScore) == 0:
+            self.highestScore = 0
+        else:
+            self.highestScore = int(self.highestScore)
+        file.close()
+
+        self.drawHighestScore()
+
+    def saveScore(self):
+        if self.score > int(self.highestScore):
+            file = open("2048/highest.txt", "w")
+            file.write(str(self.score))
+            file.close()
+            self.score = 0
+            print("aqui")
+            return True
+        self.score = 0
+        print("aquie")
+        return False
+    
+    def drawHighestScore(self):
+        self.recordScore = Text(Point(265, 105), self.highestScore)
+        self.recordScore.setStyle("bold")
+        self.recordScore.setFill(C.GAME_MAIN_COLOR)
+        self.recordScore.setSize(17)
+        self.recordScore.draw(self.win)
+
+    def updateHighestScore(self):
+        self.recordScore.undraw()
+        self.recordScore = Text(Point(265, 105), self.highestScore)
+        self.recordScore.setStyle("bold")
+        self.recordScore.setFill(C.GAME_MAIN_COLOR)
+        self.recordScore.setSize(17)
+        self.recordScore.draw(self.win)
 
     def generateRandomPiece(self):
         if self.checkEmptyCells():
@@ -63,7 +105,7 @@ class Game:
         for row in range(0, 4):
             for column in range(0, 4):
                 if self.board[row][column] == None:
-                    return True
+                    return True   
         return False
     
     def checkBoard(self):
@@ -71,8 +113,13 @@ class Game:
             return True
         
         for row in range(0, 4):
+            for column in range(0, 3):          
+                if self.board[row][column] == self.board[row][column + 1]:
+                    return True
+                
+        for row in range(0, 3):
             for column in range(0, 4):          
-                if self.board[row][column] == self.board[row + 1][column] or self.board[row][column] == self.board[row][column + 1]:
+                if self.board[row][column] == self.board[row + 1][column]:
                     return True
             
         return False
@@ -233,24 +280,41 @@ class Game:
 
         self.board = emptyBoard
 
+    def gameOver(self):
+        for row in range(0, 4):
+            for column in range(0, 4):
+                self.cells[row][column].undraw()
+
+        for row in range(0, 4):
+            for column in range(0, 4):
+                self.nums[row][column].undraw()
+
+        self.saveScore()
+
+        print("Oi")
+        self.done = True
+        return
+
     def gameLoop(self):
-        done = False
-        while not done:
+        while not self.done:
             self.generateRandomPiece()
 
-            moveKey = self.win.getKey()
+            if not self.checkBoard():
+                self.gameOver()
+                print("voltei")
 
-            if moveKey == "Up" or moveKey == "W" or moveKey == "w":
-                self.moveUp()
+            if not self.done:
+                moveKey = self.win.getKey()
 
-            if moveKey == "Left" or moveKey == "A" or moveKey == "a":
-                self.moveLeft()
-                
-            if moveKey == "Down" or moveKey == "S" or moveKey == "s":
-                self.moveDown()
+                if moveKey == "Up" or moveKey == "W" or moveKey == "w":
+                    self.moveUp()
 
-            if moveKey == "Right" or moveKey == "D" or moveKey == "d":
-                self.moveRight()
+                if moveKey == "Left" or moveKey == "A" or moveKey == "a":
+                    self.moveLeft()
+                    
+                if moveKey == "Down" or moveKey == "S" or moveKey == "s":
+                    self.moveDown()
 
-            self.checkBoard()
+                if moveKey == "Right" or moveKey == "D" or moveKey == "d":
+                    self.moveRight()
     
