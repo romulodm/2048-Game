@@ -199,13 +199,12 @@ class Game:
 
         #Num:
         if num != None:
-            numCell = self.nums[row][column]
-            numCell.undraw()
-            numCell = Text(self.cells[row][column].getCenter(), num)
-            numCell.setStyle("bold")
-            numCell.setFill(C.NUM_COLOR_DICT[num])
-            numCell.setSize(22)
-            numCell.draw(self.win)  
+            self.nums[row][column].undraw()
+            self.nums[row][column] = Text(self.cells[row][column].getCenter(), num)
+            self.nums[row][column].setStyle("bold")
+            self.nums[row][column].setFill(C.NUM_COLOR_DICT[num])
+            self.nums[row][column].setSize(22)
+            self.nums[row][column].draw(self.win)  
           
     def moveUp(self, move):
         if self.lastMove == "Up" or self.lastMove == "W" or self.lastMove == "w":
@@ -304,6 +303,8 @@ class Game:
             for row in range(3, -1, -1):
                 if self.board[row][column] != None:
                     emptyBoard[count][column] = self.board[row][column]
+                    self.cells[count][column].move(0,105)
+                    update(20)
                     count -= 1
 
         self.board = emptyBoard
