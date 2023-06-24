@@ -67,3 +67,33 @@ def game_over_screen():
     GAME_OVER.append(gameOverMessage)
 
     return GAME_OVER
+    
+def game_win_screen():
+    GAME_WIN = []
+
+    gameWinWindow = Rectangle(Point(100, 295), Point(325, 420))
+    gameWinWindow.setFill("white")
+    gameWinWindow.setWidth(3)
+    gameWinWindow.setOutline(C.GAME_MAIN_COLOR)
+    GAME_WIN.append(gameWinWindow)
+
+
+    gameWinMessage = Text(Point(212.5, 332.5), 'Congratulations, you win!\nPress the CONTINUE button\nto continue in the game.')
+    gameWinMessage.setStyle("bold")
+    gameWinMessage.setFill(C.GAME_MAIN_COLOR)
+    gameWinMessage.setSize(11)
+    GAME_WIN.append(gameWinMessage)
+
+    continueButton = Rectangle(Point(160, 380), Point(260, 410))
+    continueButton.setFill(C.GAME_MAIN_COLOR)
+    continueButton.setWidth(3)
+    continueButton.setOutline(C.GAME_MAIN_COLOR)
+    GAME_WIN.append(continueButton)
+
+    continueMessage = Text(Point(210, 395), 'CONTINUE')
+    continueMessage.setStyle("bold")
+    continueMessage.setFill("white")
+    continueMessage.setSize(11)
+    GAME_WIN.append(continueMessage)
+
+    return GAME_WIN

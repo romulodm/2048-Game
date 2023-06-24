@@ -1,7 +1,7 @@
 import random
 import time
 from graphics import *
-from visual import game_over_screen
+from visual import game_over_screen, game_win_screen
 import consts as C
 
 
@@ -29,6 +29,8 @@ class Game:
         self.nums = []
 
         self.gameOverScreen = game_over_screen()
+        self.gameWinScreen = game_win_screen()
+        self.winGame = False
 
         self.generateCells()
         self.generateNums()
@@ -127,8 +129,17 @@ class Game:
         return False
     
     def checkBoard(self):
+        if not self.winGame:
+            for row in range(0, 4):
+                for column in range(0, 3):          
+                    if self.board[row][column] == 2048:
+                        self.showGameWin()
+                        self.winGame = True
+                        return True
+                
         if self.checkEmptyCells():
             return True
+        
         
         for row in range(0, 4):
             for column in range(0, 3):          
@@ -186,16 +197,14 @@ class Game:
         Y = 152 + (row * 105)
         
         #Square:
-        cell = self.cells[row][column]
-        cell.undraw()
-        cell = Rectangle(Point(X, Y), Point(X + 96, Y + 96))
-        cell.setWidth(0)
+        self.cells[row][column].undraw()
+        self.cells[row][column] = Rectangle(Point(X, Y), Point(X + 96, Y + 96))
+        self.cells[row][column].setWidth(0)
         if num != None:
-            cell.setFill(C.CELL_COLOR_DICT[num])
+            self.cells[row][column].setFill(C.CELL_COLOR_DICT[num])
         else:
-            cell.setFill(C.BACKGROUND_COLOR_CELL_EMPTY)
-        cell.draw(self.win)
-        self.cells[row][column] = cell
+            self.cells[row][column].setFill(C.BACKGROUND_COLOR_CELL_EMPTY)
+        self.cells[row][column].draw(self.win)
 
         #Num:
         if num != None:
@@ -303,8 +312,6 @@ class Game:
             for row in range(3, -1, -1):
                 if self.board[row][column] != None:
                     emptyBoard[count][column] = self.board[row][column]
-                    self.cells[count][column].move(0,105)
-                    update(20)
                     count -= 1
 
         self.board = emptyBoard
@@ -343,6 +350,20 @@ class Game:
 
         self.board = emptyBoard
         return True
+    
+    def showGameWin(self):
+        for item in self.gameWinScreen:
+            item.draw(self.win)
+
+        done = False
+        while not done:
+            click = self.win.checkMouse()
+            if click:
+                if click.getX() >= 160 and click.getX() <= 260 and click.getY() >= 380 and click.getY() <= 410:
+                    for item in self.gameWinScreen:
+                        item.undraw()
+                    done = True
+        return True 
 
     def resetGame(self):
         for row in range(0, 4):
